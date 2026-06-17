@@ -170,3 +170,32 @@ systemctl restart tzelcafe-worker
 | MySQL on Droplet | $0 |
 | SSL | $0 |
 | **Total** | **~$12/mo** |
+
+---
+
+## DigitalOcean App Platform (backend)
+
+Live URL example: `https://tzelcafebackend-gixrp.ondigitalocean.app`
+
+Set in **Settings → App-Level Environment Variables**:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tzelcafebackend-gixrp.ondigitalocean.app
+APP_FORCE_HTTPS=true
+ASSET_URL=https://tzelcafebackend-gixrp.ondigitalocean.app
+FRONTEND_URL=https://YOUR-FRONTEND-URL
+CORS_ALLOWED_ORIGINS=https://YOUR-FRONTEND-URL
+```
+
+`APP_URL` must use **https** or admin CSS/JS will be blocked (mixed content).
+
+### Migrations & seeders
+
+```bash
+php artisan migrate --force
+php artisan db:seed --force
+```
+
+Runs `AdminUserSeeder`, `InitialMenuSeeder`, and `PromotionSeeder`.
