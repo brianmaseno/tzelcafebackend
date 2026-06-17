@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-tzel-ink text-tzel-cream font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Admin: sidebar in document flow on desktop so main content never sits underneath */
+  @media (min-width: 1024px) {
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .admin-sidebar {
+      position: relative;
+      flex-shrink: 0;
+      width: 16rem;
+      transform: none;
+    }
+
+    .admin-main {
+      flex: 1 1 0%;
+      min-width: 0;
+      width: 100%;
+    }
+  }
+}
