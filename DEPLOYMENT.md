@@ -296,4 +296,4 @@ Your workflow after Spaces is set up:
 2. No need to re-upload images unless you changed the image files  
 3. New admin uploads go straight to Spaces  
 
-6. Run `php artisan storage:link` only if using `FILESYSTEM_UPLOADS_DISK=public` on a **Droplet** (not App Platform)
+`php artisan storage:link` is only needed on a **Droplet** with `FILESYSTEM_UPLOADS_DISK=public`, not on App Platform.
