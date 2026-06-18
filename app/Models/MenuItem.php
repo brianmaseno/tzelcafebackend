@@ -40,17 +40,22 @@ class MenuItem extends Model
             return null;
         }
 
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
+        try {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                return $path;
+            }
+
+            if (str_starts_with($path, '/storage/')) {
+                return asset($path);
+            }
+
+            $disk = (string) config('filesystems.uploads', 'public');
+
+            return Storage::disk($disk)->url($path);
+        } catch (\Throwable) {
+            // Misconfigured Spaces/S3 must not break the menu API.
+            return str_starts_with($path, '/') ? asset($path) : null;
         }
-
-        if (str_starts_with($path, '/storage/')) {
-            return asset($path);
-        }
-
-        $disk = (string) config('filesystems.uploads', 'public');
-
-        return Storage::disk($disk)->url($path);
     }
 
     public function category(): BelongsTo
