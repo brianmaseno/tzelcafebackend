@@ -185,11 +185,35 @@ APP_DEBUG=false
 APP_URL=https://tzelcafebackend-gixrp.ondigitalocean.app
 APP_FORCE_HTTPS=true
 ASSET_URL=https://tzelcafebackend-gixrp.ondigitalocean.app
-FRONTEND_URL=https://YOUR-FRONTEND-URL
-CORS_ALLOWED_ORIGINS=https://YOUR-FRONTEND-URL
+FRONTEND_URL=https://www.tzelcafe.com
+CORS_ALLOWED_ORIGINS=*
 ```
 
 `APP_URL` must use **https** or admin CSS/JS will be blocked (mixed content).
+
+### CORS — allow all origins (live `.env`)
+
+In **DigitalOcean → your backend app → Settings → App-Level Environment Variables**, set **either**:
+
+```env
+CORS_ALLOWED_ORIGINS=*
+```
+
+**or**
+
+```env
+CORS_ALLOW_ALL=true
+```
+
+Both allow requests from any frontend domain (Vercel preview URLs, `www.tzelcafe.com`, etc.).
+
+**More secure (recommended once your domain is final):**
+
+```env
+CORS_ALLOWED_ORIGINS=https://www.tzelcafe.com,https://tzelcafe.com,https://your-vercel-app.vercel.app
+```
+
+After changing env vars, **Save** and **Redeploy** the app.
 
 ### Migrations & seeders
 
@@ -202,22 +226,74 @@ Runs `AdminUserSeeder`, `InitialMenuSeeder`, and `PromotionSeeder`.
 
 ### Menu images not showing (important)
 
-DigitalOcean App Platform uses an **ephemeral filesystem** — uploaded images in `storage/` are **lost on every redeploy** unless you use **DigitalOcean Spaces**.
+DigitalOcean **App Platform** uses an **ephemeral filesystem** — files saved to `storage/` on the server are **deleted every time you redeploy**. That is why Samosa and other uploaded photos break after a GitHub push.
 
-1. Create a **Space** in DigitalOcean (e.g. `tzelcafe-assets`, region `fra1`)
-2. Set Space to **Public** or use CDN endpoint
-3. Create API keys (Spaces access key + secret)
-4. Set backend environment variables:
+**You must use persistent object storage.** Options:
+
+| Option | Cost | Best for |
+|--------|------|----------|
+| **DigitalOcean Spaces** | ~$5/mo (250 GB) | Recommended — works with your app code |
+| **Image URL in admin** | Free | Paste a link from Imgur/Cloudinary while setting up Spaces |
+| **Droplet + disk** | Droplet only | If you move off App Platform later |
+
+---
+
+### How to create DigitalOcean Spaces (step by step)
+
+Spaces is **not inside App Platform**. It is a separate product in the main DigitalOcean control panel.
+
+1. Open **[cloud.digitalocean.com/spaces](https://cloud.digitalocean.com/spaces)**  
+   Or: left sidebar → **Spaces Object Storage** (under *MANAGE*).  
+   If you do not see it: click green **Create** (top right) → **Spaces Object Storage**.
+
+2. **Create a Space**
+   - Choose a region close to users (e.g. **Frankfurt `fra1`** or **Amsterdam `ams3`**)
+   - **Enable CDN** (recommended — faster image loading)
+   - Name: `tzelcafe-assets` (must be unique globally)
+   - File listing: **Restrict** (files are public only via direct URL)
+   - Click **Create a Space**
+
+3. **Create API keys**
+   - Go to **API** in the left sidebar (or [cloud.digitalocean.com/account/api/spaces](https://cloud.digitalocean.com/account/api/spaces))
+   - **Spaces access keys** → **Generate New Key**
+   - Name: `tzelcafe-uploads` → copy **Key** and **Secret** (secret shown once)
+
+4. **Get your Space URL**
+   - Open your Space → **Settings**
+   - **CDN Endpoint** looks like: `https://tzelcafe-assets.fra1.cdn.digitaloceanspaces.com`
+   - **Origin endpoint**: `https://fra1.digitaloceanspaces.com`
+
+5. **Add to backend App Platform env vars** (Settings → Environment Variables):
 
 ```env
 FILESYSTEM_UPLOADS_DISK=spaces
-DO_SPACES_KEY=your_key
-DO_SPACES_SECRET=your_secret
+DO_SPACES_KEY=paste_key_here
+DO_SPACES_SECRET=paste_secret_here
 DO_SPACES_REGION=fra1
 DO_SPACES_BUCKET=tzelcafe-assets
 DO_SPACES_ENDPOINT=https://fra1.digitaloceanspaces.com
 DO_SPACES_URL=https://tzelcafe-assets.fra1.cdn.digitaloceanspaces.com
 ```
 
-5. Redeploy, then **re-upload menu images** in admin (old files on ephemeral disk are gone)
-6. Run `php artisan storage:link` only if using `FILESYSTEM_UPLOADS_DISK=public` on a Droplet (not App Platform)
+6. **Redeploy** the backend app (Deployments → **Deploy** or push to GitHub).
+
+7. **Re-upload menu images** in admin — old files on the app server are gone; new uploads go to Spaces and **survive redeploys**.
+
+**Quick test without Spaces:** In admin → edit menu item → use **Image URL** field with a direct link (e.g. `https://images.unsplash.com/...`) until Spaces is ready.
+
+---
+
+### Deployments and photos — what happens
+
+| Storage | What happens on `git push` / redeploy |
+|---------|----------------------------------------|
+| Default (`public` disk on App Platform) | Images **lost** — broken photos |
+| **Spaces** (`FILESYSTEM_UPLOADS_DISK=spaces`) | Images **kept** — safe to redeploy anytime |
+
+Your workflow after Spaces is set up:
+
+1. Push code to GitHub → App Platform auto-redeploys  
+2. No need to re-upload images unless you changed the image files  
+3. New admin uploads go straight to Spaces  
+
+6. Run `php artisan storage:link` only if using `FILESYSTEM_UPLOADS_DISK=public` on a **Droplet** (not App Platform)
