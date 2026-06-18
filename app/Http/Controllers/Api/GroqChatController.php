@@ -17,7 +17,7 @@ class GroqChatController extends Controller
 
         $apiKey = (string) config('services.groq.api_key');
         if ($apiKey === '') {
-            return response()->json(['message' => 'Chat service is not configured.'], 503);
+            return response()->json(['message' => 'Chat service is not configured.'], 500);
         }
 
         $payload = [
