@@ -12,6 +12,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.28",
         "laravel/tinker": "^2.10.1",
+        "league/flysystem-aws-s3-v3": "3.0",
         "sendinblue/api-v3-sdk": "^8.4",
         "yabacon/paystack-php": "^2.2"
     },

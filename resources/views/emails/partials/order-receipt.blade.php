@@ -80,5 +80,5 @@
 
 <p style="margin-top:20px;font-size:12px;color:#666;line-height:1.6;">
   TZEL CAFÉ — Siwaka Plaza, Ole Sangale Road, Madaraka, Nairobi<br>
-  +254 724 329739 · hello@tzelcafe.co.ke
+  {{ config('tzel.phone') }} · {{ config('tzel.email') }}
 </p>

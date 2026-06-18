@@ -50,8 +50,7 @@ class MenuItemAdminController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu', 'public');
-            $imagePath = '/storage/'.$imagePath;
+            $imagePath = $this->storeMenuImage($request->file('image'));
         } elseif (!empty($data['image_url'])) {
             $imagePath = $data['image_url'];
         }
@@ -101,20 +100,13 @@ class MenuItemAdminController extends Controller
 
         $imagePath = $menu_item->image_path;
         if ((bool) ($data['remove_image'] ?? false)) {
-            if ($imagePath && str_starts_with($imagePath, '/storage/')) {
-                $relative = str_replace('/storage/', '', $imagePath);
-                Storage::disk('public')->delete($relative);
-            }
+            $this->deleteMenuImage($imagePath);
             $imagePath = null;
         }
 
         if ($request->hasFile('image')) {
-            if ($imagePath && str_starts_with($imagePath, '/storage/')) {
-                $relative = str_replace('/storage/', '', $imagePath);
-                Storage::disk('public')->delete($relative);
-            }
-            $stored = $request->file('image')->store('menu', 'public');
-            $imagePath = '/storage/'.$stored;
+            $this->deleteMenuImage($imagePath);
+            $imagePath = $this->storeMenuImage($request->file('image'));
         } elseif (!empty($data['image_url'])) {
             $imagePath = $data['image_url'];
         }
@@ -136,13 +128,34 @@ class MenuItemAdminController extends Controller
 
     public function destroy(MenuItem $menu_item): RedirectResponse
     {
-        $imagePath = $menu_item->image_path;
-        if ($imagePath && str_starts_with($imagePath, '/storage/')) {
-            $relative = str_replace('/storage/', '', $imagePath);
-            Storage::disk('public')->delete($relative);
-        }
+        $this->deleteMenuImage($menu_item->image_path);
 
         $menu_item->delete();
         return redirect()->route('admin.menu-items.index')->with('status', 'Menu item deleted.');
+    }
+
+    private function uploadsDisk(): string
+    {
+        return (string) config('filesystems.uploads', 'public');
+    }
+
+    private function storeMenuImage(\Illuminate\Http\UploadedFile $file): string
+    {
+        $stored = $file->store('menu', $this->uploadsDisk());
+
+        return $this->uploadsDisk() === 'public' ? '/storage/'.$stored : $stored;
+    }
+
+    private function deleteMenuImage(?string $imagePath): void
+    {
+        if (! $imagePath || str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+            return;
+        }
+
+        $relative = str_starts_with($imagePath, '/storage/')
+            ? str_replace('/storage/', '', $imagePath)
+            : $imagePath;
+
+        Storage::disk($this->uploadsDisk())->delete($relative);
     }
 }

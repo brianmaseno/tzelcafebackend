@@ -199,3 +199,25 @@ php artisan db:seed --force
 ```
 
 Runs `AdminUserSeeder`, `InitialMenuSeeder`, and `PromotionSeeder`.
+
+### Menu images not showing (important)
+
+DigitalOcean App Platform uses an **ephemeral filesystem** — uploaded images in `storage/` are **lost on every redeploy** unless you use **DigitalOcean Spaces**.
+
+1. Create a **Space** in DigitalOcean (e.g. `tzelcafe-assets`, region `fra1`)
+2. Set Space to **Public** or use CDN endpoint
+3. Create API keys (Spaces access key + secret)
+4. Set backend environment variables:
+
+```env
+FILESYSTEM_UPLOADS_DISK=spaces
+DO_SPACES_KEY=your_key
+DO_SPACES_SECRET=your_secret
+DO_SPACES_REGION=fra1
+DO_SPACES_BUCKET=tzelcafe-assets
+DO_SPACES_ENDPOINT=https://fra1.digitaloceanspaces.com
+DO_SPACES_URL=https://tzelcafe-assets.fra1.cdn.digitaloceanspaces.com
+```
+
+5. Redeploy, then **re-upload menu images** in admin (old files on ephemeral disk are gone)
+6. Run `php artisan storage:link` only if using `FILESYSTEM_UPLOADS_DISK=public` on a Droplet (not App Platform)

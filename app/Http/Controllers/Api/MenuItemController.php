@@ -27,7 +27,7 @@ class MenuItemController extends Controller
                     'currency' => 'KES',
                     'category' => $item->category?->slug,
                     'categoryLabel' => $item->category?->name,
-                    'image' => $item->image_path ? url($item->image_path) : null,
+                    'image' => $item->imageUrl(),
                     'rating' => $item->rating,
                     'featured' => $item->is_featured,
                 ];

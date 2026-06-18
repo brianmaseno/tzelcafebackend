@@ -59,7 +59,7 @@ return [
 
     'tzel' => [
         'admin_notification_email' => env('ADMIN_NOTIFICATION_EMAIL', env('BREVO_SENDER_EMAIL')),
-        'whatsapp_number' => env('TZEL_WHATSAPP_NUMBER', '254700000000'),
+        'whatsapp_number' => env('TZEL_WHATSAPP_NUMBER', '254142958667'),
         'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
     ],
 ];
