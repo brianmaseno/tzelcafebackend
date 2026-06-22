@@ -56,7 +56,8 @@
 
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
-        <label class="mb-1.5 block text-sm text-tzel-sand" for="image">Replace image (optional)</label>
+        <p class="mt-1 text-xs text-tzel-muted">Uploads are stored on Cloudinary when CLOUDINARY_URL is set (recommended for production).</p>
+        <label class="mb-1.5 mt-4 block text-sm text-tzel-sand" for="image">Replace image (optional)</label>
         <input id="image" name="image" type="file" accept="image/*"
           class="block w-full text-sm text-tzel-sand file:mr-4 file:rounded-full file:border-0 file:bg-tzel-bronze file:px-4 file:py-2 file:text-sm file:font-semibold file:text-tzel-ink hover:file:bg-tzel-gold" />
       </div>
@@ -68,10 +69,10 @@
       </div>
     </div>
 
-    @if ($item->image_path)
+    @if ($item->imageUrl())
       <div class="rounded-2xl border border-white/5 bg-tzel-ink/30 p-4">
         <div class="flex items-center gap-4">
-          <img src="{{ $item->image_path }}" alt="{{ $item->name }}" class="h-20 w-20 rounded-xl object-cover ring-1 ring-white/10" />
+          <img src="{{ $item->imageUrl() }}" alt="{{ $item->name }}" class="h-20 w-20 rounded-xl object-cover ring-1 ring-white/10" />
           <div class="flex-1">
             <div class="text-sm text-tzel-sand">Current image</div>
             <div class="mt-1 break-all text-xs text-tzel-muted">{{ $item->image_path }}</div>

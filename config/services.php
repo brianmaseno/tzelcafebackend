@@ -57,6 +57,10 @@ return [
         'api_key' => env('GROQ_API_KEY'),
     ],
 
+    'cloudinary' => [
+        'url' => env('CLOUDINARY_URL'),
+    ],
+
     'tzel' => [
         'admin_notification_email' => env('ADMIN_NOTIFICATION_EMAIL', env('BREVO_SENDER_EMAIL')),
         'whatsapp_number' => env('TZEL_WHATSAPP_NUMBER', '254142958667'),

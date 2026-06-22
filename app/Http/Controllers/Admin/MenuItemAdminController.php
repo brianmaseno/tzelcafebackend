@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MenuItem;
+use App\Services\CloudinaryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +15,8 @@ use Illuminate\View\View;
 
 class MenuItemAdminController extends Controller
 {
+    public function __construct(private readonly CloudinaryService $cloudinary) {}
+
     public function index(): View
     {
         $items = MenuItem::query()
@@ -108,6 +111,7 @@ class MenuItemAdminController extends Controller
             $this->deleteMenuImage($imagePath);
             $imagePath = $this->storeMenuImage($request->file('image'));
         } elseif (!empty($data['image_url'])) {
+            $this->deleteMenuImage($imagePath);
             $imagePath = $data['image_url'];
         }
 
@@ -141,6 +145,10 @@ class MenuItemAdminController extends Controller
 
     private function storeMenuImage(\Illuminate\Http\UploadedFile $file): string
     {
+        if ($this->cloudinary->isConfigured()) {
+            return $this->cloudinary->upload($file);
+        }
+
         $stored = $file->store('menu', $this->uploadsDisk());
 
         return $this->uploadsDisk() === 'public' ? '/storage/'.$stored : $stored;
@@ -148,7 +156,17 @@ class MenuItemAdminController extends Controller
 
     private function deleteMenuImage(?string $imagePath): void
     {
-        if (! $imagePath || str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+        if (! $imagePath) {
+            return;
+        }
+
+        if ($this->cloudinary->isCloudinaryUrl($imagePath)) {
+            $this->cloudinary->delete($imagePath);
+
+            return;
+        }
+
+        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
             return;
         }
 

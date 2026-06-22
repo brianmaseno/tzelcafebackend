@@ -36,8 +36,8 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-4">
                   <div class="h-12 w-12 overflow-hidden rounded-xl border border-white/10 bg-tzel-ink/40">
-                    @if ($item->image_path)
-                      <img src="{{ $item->image_path }}" alt="{{ $item->name }}" class="h-full w-full object-cover" loading="lazy" />
+                    @if ($item->imageUrl())
+                      <img src="{{ $item->imageUrl() }}" alt="{{ $item->name }}" class="h-full w-full object-cover" loading="lazy" />
                     @endif
                   </div>
                   <div class="min-w-0">

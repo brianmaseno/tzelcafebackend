@@ -51,8 +51,8 @@
     <div class="rounded-2xl border border-white/5 bg-tzel-espresso/30 p-6">
       <h2 class="font-serif text-lg text-tzel-cream">Image</h2>
       <div class="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-tzel-ink/30">
-        @if ($item->image_path)
-          <img src="{{ $item->image_path }}" alt="{{ $item->name }}" class="aspect-[4/3] w-full object-cover" />
+        @if ($item->imageUrl())
+          <img src="{{ $item->imageUrl() }}" alt="{{ $item->name }}" class="aspect-[4/3] w-full object-cover" />
         @else
           <div class="flex aspect-[4/3] items-center justify-center text-sm text-tzel-muted">No image</div>
         @endif

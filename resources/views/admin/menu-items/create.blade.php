@@ -58,7 +58,8 @@
 
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
-        <label class="mb-1.5 block text-sm text-tzel-sand" for="image">Upload image (optional)</label>
+        <p class="mt-1 text-xs text-tzel-muted">Uploads are stored on Cloudinary when CLOUDINARY_URL is set (recommended for production).</p>
+        <label class="mb-1.5 mt-4 block text-sm text-tzel-sand" for="image">Upload image (optional)</label>
         <input id="image" name="image" type="file" accept="image/*"
           class="block w-full text-sm text-tzel-sand file:mr-4 file:rounded-full file:border-0 file:bg-tzel-bronze file:px-4 file:py-2 file:text-sm file:font-semibold file:text-tzel-ink hover:file:bg-tzel-gold" />
       </div>
