@@ -29,9 +29,7 @@ Route::post('/chat', GroqChatController::class);
 Route::post('/orders/track', [OrderTrackingController::class, 'track']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/me', fn () => response()->json([
-        'data' => AuthController::userPayload(request()->user()),
-    ]));
+    Route::get('/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::patch('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/profile/password/otp', [AuthController::class, 'sendProfileOtp']);

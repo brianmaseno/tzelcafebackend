@@ -66,6 +66,13 @@ class AuthController extends Controller
         return response()->json(['data' => ['ok' => true]]);
     }
 
+    public function me(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->userPayload($request->user()),
+        ]);
+    }
+
     public function sendPasswordOtp(Request $request, PasswordOtpService $otp): JsonResponse
     {
         $data = $request->validate([
